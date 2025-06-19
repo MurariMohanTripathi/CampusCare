@@ -1,71 +1,67 @@
-import React, { useState ,useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import { ref, push } from 'firebase/database';
-import { db, auth } from '../../firebase';  // Make sure your firebase exports db and auth correctly
+import { db, auth } from '../../firebase';
 import Navbar from './Navbar';
+
 const ComplaintForm = () => {
-  // State for all inputs
-  const [name, setName] = useState('');
-  const [roll, setRoll] = useState('');
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
-  const [department, setDepartment] = useState('Computer Science');
-  const [date, setDate] = useState('');
-  const [subject, setSubject] = useState('');
-  const [description, setDescription] = useState('');
-  const [priority, setPriority] = useState('Low priority');
+  const [formData, setFormData] = useState({
+    name: '',
+    roll: '',
+    email: '',
+    phone: '',
+    department: 'Computer Science',
+    date: '',
+    subject: '',
+    description: '',
+    priority: 'Low priority',
+  });
+
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  useEffect(()=>{
-        const user = auth.currentUser;
-        if(user){
-          setEmail(user.email || '');
-        }
-      },[]);
+
+  useEffect(() => {
+    const user = auth.currentUser;
+    if (user) {
+      setFormData((prev) => ({ ...prev, email: user.email || '' }));
+    }
+  }, []);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setSuccess('');
 
+    const user = auth.currentUser;
+    if (!user) {
+      setError('User not logged in');
+      return;
+    }
+
     try {
-      const user = auth.currentUser;
-      if (!user) {
-        setError('User not logged in');
-        return;
-      }
-
-      
-
-      // Build complaint object
       const complaintData = {
-        name,
-        roll,
-        email,
-        phone,
-        department,
-        date,
-        subject,
-        description,
-        priority,
+        ...formData,
         status: 'pending',
         timestamp: new Date().toISOString(),
       };
 
-      // Push complaint to user's complaints node
-      const complaintRef = ref(db, `users/${user.uid}/complaints`);
-      await push(complaintRef, complaintData);
-
+      await push(ref(db, `users/${user.uid}/complaints`), complaintData);
       setSuccess('Complaint submitted successfully!');
-      // Clear form
-      setName('');
-      setRoll('');
-      setEmail('');
-      setPhone('');
-      setDepartment('Computer Science');
-      setDate('');
-      setSubject('');
-      setDescription('');
-      setPriority('Low priority');
+      setFormData({
+        name: '',
+        roll: '',
+        email: user.email || '',
+        phone: '',
+        department: 'Computer Science',
+        date: '',
+        subject: '',
+        description: '',
+        priority: 'Low priority',
+      });
     } catch (err) {
       setError('Failed to submit complaint: ' + err.message);
     }
@@ -74,171 +70,113 @@ const ComplaintForm = () => {
   return (
     <>
       <Navbar />
-      <div className='font-semibold hover:shadow-yellow-200 hover:shadow-xl w-3/4 xl:w-[35rem] mt-14 pl-20 xl:pl-8 xl:pt-6 flex justify-center items-center xl:ml-[29rem] ml-11 rounded-xl xl:mt-16 xl:mb-11 bg-gradient-to-r from-cyan-400 to-blue-400'>
-        <form onSubmit={handleSubmit} className="w-full">
-          {/* Name */}
-          <div className='p-2'>
-            <label htmlFor="Name">
-              <h1 className='hidden md:flex text-white'>Enter your name :</h1>
-              <input
-                type="text"
-                placeholder="     Student's Name"
-                className='text-black w-full rounded-md p-1'
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-              />
-            </label>
-          </div>
+      <div className="flex justify-center items-center px-4 pt-16 pb-12 bg-gradient-to-r from-cyan-400 to-blue-400 min-h-screen">
+        <form
+          onSubmit={handleSubmit}
+          className="w-full max-w-2xl bg-white shadow-lg rounded-2xl p-8 space-y-4"
+        >
+          <h2 className="text-2xl font-bold text-center text-blue-700">Complaint Form</h2>
 
-          {/* Roll Number */}
-          <div className='p-2'>
-            <label htmlFor="roll">
-              <h1 className='hidden md:flex text-white'>Enter your roll number :</h1>
+          {/* Input fields */}
+          {[
+            { label: 'Name', name: 'name', type: 'text', placeholder: "Enter your full name" },
+            { label: 'Roll Number', name: 'roll', type: 'number', placeholder: "Enter your roll number" },
+            { label: 'Phone', name: 'phone', type: 'tel', placeholder: "Enter your phone number", maxLength: 10 },
+            { label: 'Date', name: 'date', type: 'date' },
+            { label: 'Subject', name: 'subject', type: 'text', placeholder: "Short title of your complaint" },
+          ].map(({ label, name, type, placeholder, maxLength }) => (
+            <div key={name}>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">{label}</label>
               <input
-                type="number"
-                placeholder="     Enter Roll number"
-                className='w-full rounded-md p-1'
-                value={roll}
-                onChange={(e) => setRoll(e.target.value)}
+                type={type}
+                name={name}
+                value={formData[name]}
+                onChange={handleChange}
+                placeholder={placeholder}
+                maxLength={maxLength}
                 required
+                className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
               />
-            </label>
-          </div>
+            </div>
+          ))}
 
-          {/* Email */}
-          <div className='p-2'>
-            <label htmlFor="email">
-              
-              <input
-                type="email"
-                className='w-full rounded-md p-1 text-center text-red-600'
-                value={email}
-                readOnly
-                // onChange={(e) => setEmail(e.target.value)}
-              />
-            </label>
-          </div>
-
-          {/* Phone */}
-          <div className='p-2'>
-            <label htmlFor="phoneNumber">
-              <h1 className='hidden md:flex text-white'>Enter your phone number :</h1>
-              <input
-                type="tel"
-                placeholder="      phone number"
-                maxLength={10}
-                className='w-full rounded-md p-1'
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                required
-              />
-            </label>
+          {/* Email (readonly) */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">Email</label>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              readOnly
+              className="w-full px-4 py-2 text-center text-red-600 border border-gray-300 rounded-md bg-gray-100"
+            />
           </div>
 
           {/* Department */}
-          <div className='p-2 text-black font-normal'>
-            <h1 className='hidden md:flex text-white'>Choose department :</h1>
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">Department</label>
             <select
-              className='w-full rounded-md p-1'
-              value={department}
-              onChange={(e) => setDepartment(e.target.value)}
+              name="department"
+              value={formData.department}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm"
             >
-              <option value="Computer Science">Computer Science</option>
-              <option value="Electrical">Electrical</option>
-              <option value="Mechanical">Mechanical</option>
-              <option value="Commerce">Commerce</option>
-              <option value="Arts & wellbeing">Arts & wellbeing</option>
-              <option value="Law">Law</option>
-              <option value="Hostel">Hostel</option>
-              <option value="Library">Library</option>
+              {['Computer Science', 'Electrical', 'Mechanical', 'Commerce', 'Arts & wellbeing', 'Law', 'Hostel', 'Library'].map((dept) => (
+                <option key={dept} value={dept}>{dept}</option>
+              ))}
             </select>
           </div>
 
-          {/* Date */}
-          <div className='p-2'>
-            <label htmlFor="Date">
-              <h1 className='hidden md:flex text-white'>Date of complaint :</h1>
-              <input
-                type="date"
-                className='w-full rounded-md p-1'
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                required
-              />
-            </label>
-          </div>
-
-          {/* Subject */}
-          <div className='p-2'>
-            <label htmlFor="subject">
-              <h1 className='hidden md:flex text-white'>Enter title/subject of complaint (in short) :</h1>
-              <input
-                type="text"
-                placeholder='Enter Subject of complaint'
-                className='w-full rounded-md p-1'
-                value={subject}
-                onChange={(e) => setSubject(e.target.value)}
-                required
-              />
-            </label>
-          </div>
-
           {/* Description */}
-          <div className='p-2'>
-            <label htmlFor="description">
-              <h1 className='hidden md:flex text-white'>Describe the issue:</h1>
-              <textarea
-                placeholder='Add detail of complaint'
-                className='w-full rounded-md p-1'
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                required
-              />
-            </label>
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">Description</label>
+            <textarea
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              placeholder="Explain the issue in detail"
+              required
+              rows={4}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm resize-none"
+            />
           </div>
 
           {/* Priority */}
-          <div className='p-2'>
-            <label htmlFor="priority">
-              <h1 className='hidden md:flex text-white'>Choose importance of issue :</h1>
-              <select
-                value={priority}
-                onChange={(e) => setPriority(e.target.value)}
-                className='w-full rounded-md p-1'
-              >
-                <option value="Low priority">Low priority</option>
-                <option value="Medium priority">Medium priority</option>
-                <option value="High priority">High priority</option>
-              </select>
-            </label>
-          </div>
-
-          {/* Attachment (optional) */}
-          <div className='p-2'>
-            <label htmlFor="attachment">
-              <h1 className='hidden md:flex text-white'>Attachments related to issue (optional):</h1>
-              <input
-                type="file"
-                className='w-full rounded-md p-1 text-black'
-                disabled
-                title="Attachment feature not implemented"
-              />
-            </label>
-          </div>
-
-          {/* Submit button */}
-          <div className='p-2'>
-            <button
-              type="submit"
-              className='w-full p-2 rounded-lg bg-yellow-400 hover:bg-yellow-300 font-bold text-lg text-black mt-4'
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">Priority</label>
+            <select
+              name="priority"
+              value={formData.priority}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm"
             >
-              Submit
-            </button>
+              <option value="Low priority">Low</option>
+              <option value="Medium priority">Medium</option>
+              <option value="High priority">High</option>
+            </select>
           </div>
 
-          {/* Success or error messages */}
-          {error && <p className="text-red-500 text-center mt-2">{error}</p>}
+          {/* Attachment (disabled) */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">Attachment (not implemented)</label>
+            <input
+              type="file"
+              disabled
+              title="Attachment functionality not available yet"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-500"
+            />
+          </div>
+
+          {/* Submit */}
+          <button
+            type="submit"
+            className="w-full py-3 bg-yellow-400 hover:bg-yellow-300 text-black font-bold rounded-lg transition duration-200"
+          >
+            Submit Complaint
+          </button>
+
+          {/* Feedback */}
+          {error && <p className="text-red-600 text-center mt-2">{error}</p>}
           {success && <p className="text-green-600 text-center mt-2">{success}</p>}
         </form>
       </div>

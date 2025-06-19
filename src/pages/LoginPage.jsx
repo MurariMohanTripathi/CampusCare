@@ -14,25 +14,32 @@ const LoginPage = () => {
 
   const handleSignUp = () => navigate('/SignUp');
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setError('');
-    try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-      const snapshot = await get(ref(db, 'users/' + user.uid));
-      if (snapshot.exists()) {
-        const userType = snapshot.val().type;
-        if (userType === 'student') navigate('/Homepage');
-        else if (userType === 'admin' || userType === 'SuperAdmin') navigate('/HomepageAdmin');
-        else setError('Unknown user type');
-      } else {
-        setError('User data not found');
-      }
-    } catch (err) {
-      setError(err.message);
+const handleLogin = async (e) => {
+  e.preventDefault();
+  setError('');
+  try {
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+
+    // if (!user.emailVerified) {
+    //   setError("Please verify your email before logging in.");
+    //   return;
+    // }
+
+    const snapshot = await get(ref(db, 'users/' + user.uid));
+    if (snapshot.exists()) {
+      const userType = snapshot.val().type;
+      if (userType === 'student') navigate('/Homepage');
+      else if (userType === 'admin' || userType === 'SuperAdmin') navigate('/HomepageAdmin');
+      else setError('Unknown user type');
+    } else {
+      setError('User data not found');
     }
-  };
+  } catch (err) {
+    setError(err.message);
+  }
+};
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-tr from-blue-100 via-cyan-100 to-blue-200 px-4 py-10">
@@ -81,7 +88,7 @@ const LoginPage = () => {
                 <input
                   type="password"
                   placeholder="Enter password"
-                  maxLength={10}
+                  maxLength={128}
                   className="w-full outline-none text-gray-800"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}

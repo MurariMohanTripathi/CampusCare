@@ -1,15 +1,20 @@
 import React, { useState } from "react";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { ref, set } from "firebase/database";
-import { auth, db } from "../firebase";
-import { useNavigate } from "react-router-dom";
 import {
-  AiOutlineMail,
-  AiOutlinePhone,
-} from "react-icons/ai";
+  get,
+  ref,
+  set,
+} from "firebase/database";
+import {
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+} from "firebase/auth";
+import { db, auth } from "../firebase";
+import { useNavigate } from "react-router-dom";
+import { AiOutlineMail, AiOutlinePhone } from "react-icons/ai";
 import { RiLockPasswordLine } from "react-icons/ri";
 import { MdSchool } from "react-icons/md";
 import { FaUserShield } from "react-icons/fa";
+import EmailVerificationComponent from "../component/EmailVerification";
 
 const SignUp = () => {
   const navigate = useNavigate();
@@ -22,31 +27,121 @@ const SignUp = () => {
     college_name: "",
   });
 
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [errors, setErrors] = useState({});
+  const [isEmailMarkedVerified, setIsEmailMarkedVerified] = useState(false);
+
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    if (name === "email") validateEmail(value);
+    if (name === "password") validatePassword(value);
+    if (name === "phone") validatePhone(value);
+  };
+
+  const validateEmail = (value) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    setErrors((prev) => ({
+      ...prev,
+      email: emailRegex.test(value)
+        ? ""
+        : "Please enter a valid email address.",
+    }));
+  };
+
+  const validatePassword = (value) => {
+    const strongPassword =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+    setErrors((prev) => ({
+      ...prev,
+      password: strongPassword.test(value)
+        ? ""
+        : "Password must be 8+ chars with uppercase, lowercase, number, and special char.",
+    }));
+  };
+
+  const validatePhone = (value) => {
+    const phoneRegex = /^[6-9]\d{9}$/;
+    setErrors((prev) => ({
+      ...prev,
+      phone: phoneRegex.test(value)
+        ? ""
+        : "Phone must be 10 digits starting with 6-9.",
+    }));
   };
 
   const handleSignup = async (e) => {
     e.preventDefault();
-    try {
-      const { email, password, phone, userType, college_name } = formData;
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
 
-      await set(ref(db, "users/" + user.uid), {
+    if (!isEmailMarkedVerified) {
+      alert("Please verify your email first.");
+      return;
+    }
+
+    const { email, password, phone, userType, college_name } = formData;
+
+    if (errors.email || errors.password || errors.phone) {
+      alert("Please fix all errors before submitting.");
+      return;
+    }
+
+    if (confirmPassword !== password) {
+      alert("Passwords do not match.");
+      return;
+    }
+
+    try {
+      if (userType === "student" || userType === "admin") {
+        const usersSnapshot = await get(ref(db, "users"));
+        let collegeExists = false;
+
+        if (usersSnapshot.exists()) {
+          const usersData = usersSnapshot.val();
+          for (let uid in usersData) {
+            if (
+              usersData[uid].college_name &&
+              usersData[uid].college_name.toLowerCase() ===
+                college_name.toLowerCase()
+            ) {
+              collegeExists = true;
+              break;
+            }
+          }
+        }
+
+        if (!collegeExists) {
+          alert(
+            "This college is not registered yet. Please contact your SuperAdmin to register the college first."
+          );
+          return;
+        }
+      }
+
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
+      await sendEmailVerification(userCredential.user);
+      const uid = userCredential.user.uid;
+
+      await set(ref(db, "users/" + uid), {
         email,
         phone,
         type: userType,
         college_name,
       });
 
-      alert("User registered successfully!");
-      setTimeout(() => {
-        if (userType === "student") navigate("/Homepage");
-        else navigate("/HomepageAdmin");
-      }, 500);
+      alert(
+        "User registered successfully! A verification email has been sent. Please verify before logging in."
+      );
+
+      if (userType === "student") navigate("/Homepage");
+      else navigate("/HomepageAdmin");
     } catch (error) {
-      alert(error.message);
+      alert("Registration failed: " + error.message);
     }
   };
 
@@ -58,7 +153,6 @@ const SignUp = () => {
         </h2>
 
         <form onSubmit={handleSignup} className="space-y-6">
-          {/* Email */}
           <InputField
             label="Email"
             name="email"
@@ -67,9 +161,9 @@ const SignUp = () => {
             onChange={handleChange}
             type="email"
             placeholder="you@example.com"
+            error={errors.email}
           />
 
-          {/* Password */}
           <InputField
             label="Password"
             name="password"
@@ -78,9 +172,30 @@ const SignUp = () => {
             onChange={handleChange}
             type="password"
             placeholder="Create a password"
+            error={errors.password}
           />
 
-          {/* Phone */}
+          <InputField
+            label="Confirm Password"
+            name="confirmPassword"
+            icon={<RiLockPasswordLine />}
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            type="password"
+            placeholder="Confirm your password"
+            error={
+              confirmPassword &&
+              confirmPassword !== formData.password &&
+              "Passwords do not match."
+            }
+          />
+
+          <EmailVerificationComponent
+            email={formData.email}
+            password={formData.password}
+            onMarkVerified={() => setIsEmailMarkedVerified(true)}
+          />
+
           <InputField
             label="Phone Number"
             name="phone"
@@ -89,9 +204,9 @@ const SignUp = () => {
             onChange={handleChange}
             type="text"
             placeholder="Enter your phone number"
+            error={errors.phone}
           />
 
-          {/* College */}
           <InputField
             label="Unique College Name"
             name="college_name"
@@ -102,9 +217,10 @@ const SignUp = () => {
             placeholder="Your college name"
           />
 
-          {/* User Type */}
           <div>
-            <label className="block text-gray-800 font-semibold mb-1">User Type</label>
+            <label className="block text-gray-800 font-semibold mb-1">
+              User Type
+            </label>
             <div className="flex items-center bg-white/70 border rounded-xl px-4 py-2 shadow-inner focus-within:ring-2 focus-within:ring-purple-400 transition">
               <FaUserShield className="text-xl text-gray-500 mr-2" />
               <select
@@ -120,15 +236,18 @@ const SignUp = () => {
             </div>
           </div>
 
-          {/* Submit Button */}
           <button
             type="submit"
-            className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold py-3 rounded-xl shadow-lg hover:shadow-2xl hover:scale-[1.02] transform transition duration-300"
+            disabled={!isEmailMarkedVerified}
+            className={`w-full font-bold py-3 rounded-xl shadow-lg transform transition duration-300 ${
+              isEmailMarkedVerified
+                ? "bg-gradient-to-r from-indigo-500 to-purple-600 text-white hover:shadow-2xl hover:scale-[1.02]"
+                : "bg-gray-300 text-gray-600 cursor-not-allowed"
+            }`}
           >
             Register
           </button>
 
-          {/* Navigation Link */}
           <div className="text-center mt-5">
             <span className="text-gray-700 text-sm">
               Already have an account?{" "}
@@ -146,7 +265,16 @@ const SignUp = () => {
   );
 };
 
-const InputField = ({ label, name, value, onChange, type, placeholder, icon }) => (
+const InputField = ({
+  label,
+  name,
+  value,
+  onChange,
+  type,
+  placeholder,
+  icon,
+  error,
+}) => (
   <div>
     <label className="block text-gray-800 font-semibold mb-1">{label}</label>
     <div className="flex items-center bg-white/70 border rounded-xl px-4 py-2 shadow-inner focus-within:ring-2 focus-within:ring-purple-400 transition">
@@ -161,6 +289,7 @@ const InputField = ({ label, name, value, onChange, type, placeholder, icon }) =
         className="w-full bg-transparent outline-none text-gray-700 font-medium"
       />
     </div>
+    {error && <p className="text-red-600 text-sm mt-1">{error}</p>}
   </div>
 );
 
