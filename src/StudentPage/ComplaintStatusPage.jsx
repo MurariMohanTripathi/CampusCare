@@ -81,18 +81,20 @@ const ComplaintStatusPage = () => {
                 <td className="px-6 py-3">{subject || "No Title"}</td>
                 <td className="px-6 py-3">{formattedDate}</td>
                 <td className="px-6 py-3">
-                  <span
-                    className={`inline-block px-3 py-1 text-xs font-medium rounded-full ${
-                      status === "Resolved"
-                        ? "bg-green-100 text-green-700"
-                        : status === "In Progress"
-                        ? "bg-yellow-100 text-yellow-700"
-                        : "bg-red-100 text-red-700"
-                    }`}
-                  >
-                    {status || "Pending"}
-                  </span>
-                </td>
+  <span
+    className={`inline-block px-3 py-1 text-xs font-semibold rounded-full transition-all duration-300 shadow-sm border
+      ${
+        status === "resolved"
+          ? "bg-green-100 text-green-800 border-green-300 shadow-green-200"
+          : status === "In Progress"
+          ? "bg-yellow-50 text-yellow-800 border-yellow-300 shadow-yellow-200 animate-pulse"
+          : "bg-red-100 text-red-800 border-red-300 shadow-red-200"
+      }`}
+  >
+    {status}
+  </span>
+</td>
+
               </tr>
             );
           })}

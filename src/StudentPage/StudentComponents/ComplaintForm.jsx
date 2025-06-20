@@ -4,6 +4,13 @@ import { db, auth } from '../../firebase';
 import Navbar from './Navbar';
 
 const ComplaintForm = () => {
+const today = new Date();
+const todayStr = today.toISOString().split("T")[0];
+
+const past7Date = new Date();
+past7Date.setDate(today.getDate() - 6);
+const past7Str = past7Date.toISOString().split("T")[0];
+
   const [formData, setFormData] = useState({
     name: '',
     roll: '',
@@ -82,7 +89,7 @@ const ComplaintForm = () => {
             { label: 'Name', name: 'name', type: 'text', placeholder: "Enter your full name" },
             { label: 'Roll Number', name: 'roll', type: 'number', placeholder: "Enter your roll number" },
             { label: 'Phone', name: 'phone', type: 'tel', placeholder: "Enter your phone number", maxLength: 10 },
-            { label: 'Date', name: 'date', type: 'date' },
+            { label: 'Date', name: 'date', type: 'date' ,max:today ,min:past7Date},
             { label: 'Subject', name: 'subject', type: 'text', placeholder: "Short title of your complaint" },
           ].map(({ label, name, type, placeholder, maxLength }) => (
             <div key={name}>
@@ -94,6 +101,8 @@ const ComplaintForm = () => {
                 onChange={handleChange}
                 placeholder={placeholder}
                 maxLength={maxLength}
+                min={name === "date" ? past7Str : undefined}
+                max = {name === "date" ? todayStr: undefined}
                 required
                 className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
               />
