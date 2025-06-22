@@ -9,17 +9,7 @@ import {
 } from "firebase/database";
 import { auth } from "../../firebase";
 import AdminComplaintCards from "../AdminComponents/AdminComplaintCards";
-
-const STATUS_COLORS = {
-  pending: "bg-yellow-100 text-yellow-800",
-  "in-progress": "bg-blue-100 text-blue-800",
-  resolved: "bg-green-100 text-green-800",
-};
-
-const truncateText = (text, maxLength = 40) => {
-  if (!text) return "";
-  return text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
-};
+import ComplaintCard from "../AdminComponents/ComplaintCard"; // New card component
 
 const AllComplaints = () => {
   const [complaints, setComplaints] = useState([]);
@@ -152,113 +142,32 @@ const AllComplaints = () => {
             d="M4 12a8 8 0 018-8v8H4z"
           ></path>
         </svg>
-        <span className="ml-3 text-gray-700 text-lg">
-          Loading complaints...
-        </span>
+        <span className="ml-3 text-gray-700 text-lg">Loading complaints...</span>
       </div>
     );
   }
 
   return (
-    <div className="p-6 max-w-full overflow-x-auto">
+    <div className="p-6 max-w-7xl mx-auto">
       <AdminComplaintCards stats={stats} />
 
       <h2 className="text-3xl font-semibold my-6 text-gray-800">
         All Student Complaints
       </h2>
+
       {complaints.length === 0 ? (
         <p className="text-center text-gray-600">No complaints found.</p>
       ) : (
-        <table className="min-w-[900px] w-full border-collapse border border-gray-300 text-left">
-          <thead className="bg-gray-100 sticky top-0">
-            <tr>
-              {[
-                "Name",
-                "Roll",
-                "Dept.",
-                "Email",
-                "Subject",
-                "Description",
-                "Priority",
-                "Date",
-                "Status",
-                "Actions",
-              ].map((head) => (
-                <th
-                  key={head}
-                  className="border border-gray-300 px-3 py-2 text-gray-700 font-medium select-none"
-                >
-                  {head}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {complaints.map((comp, idx) => (
-              <tr
-                key={comp.complaintId + idx}
-                className="hover:bg-gray-50 even:bg-white odd:bg-gray-50"
-                title={comp.description}
-              >
-                <td className="border border-gray-300 px-3 py-1 max-w-[130px] truncate">
-                  {comp.name}
-                </td>
-                <td className="border border-gray-300 px-3 py-1">
-                  {comp.roll}
-                </td>
-                <td className="border border-gray-300 px-3 py-1">
-                  {comp.department}
-                </td>
-                <td className="border border-gray-300 px-3 py-1 max-w-[180px] truncate">
-                  {comp.email}
-                </td>
-                <td className="border border-gray-300 px-3 py-1 max-w-[160px] truncate">
-                  {comp.subject}
-                </td>
-                <td
-                  className="border border-gray-300 px-3 py-1 max-w-[250px] truncate cursor-help"
-                  title={comp.description}
-                >
-                  {truncateText(comp.description, 60)}
-                </td>
-                <td className="border border-gray-300 px-3 py-1">
-                  {comp.priority}
-                </td>
-                <td className="border border-gray-300 px-3 py-1">
-                  {comp.date}
-                </td>
-                <td className="border border-gray-300 px-3 py-1">
-                  <select
-                    value={comp.status}
-                    onChange={(e) =>
-                      handleStatusChange(
-                        comp.userId,
-                        comp.complaintId,
-                        e.target.value
-                      )
-                    }
-                    className={`px-2 py-1 rounded border border-gray-300 text-sm font-semibold ${
-                      STATUS_COLORS[comp.status] || "bg-gray-100 text-gray-700"
-                    }`}
-                  >
-                    <option value="pending">Pending</option>
-                    <option value="in-progress">In Progress</option>
-                    <option value="resolved">Resolved</option>
-                  </select>
-                </td>
-                <td className="border border-gray-300 px-3 py-1 text-center">
-                  <button
-                    onClick={() => handleDelete(comp.userId, comp.complaintId)}
-                    className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded transition"
-                    aria-label={`Delete complaint ${comp.subject}`}
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {complaints.map((comp, idx) => (
+            <ComplaintCard
+              key={comp.complaintId + idx}
+              complaint={comp}
+              onStatusChange={handleStatusChange}
+              onDelete={handleDelete}
+            />
+          ))}
+        </div>
       )}
     </div>
   );

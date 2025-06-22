@@ -49,7 +49,7 @@ const Footer = () => {
               </Link>
             </li>
             <li>
-              <Link to="/about" className="hover:text-white transition">
+              <Link to="/About" className="hover:text-white transition">
                 About Us
               </Link>
             </li>
@@ -69,7 +69,7 @@ const Footer = () => {
           <ul className="space-y-2 text-sm text-gray-400">
             <li>
               <a
-                href="https://docs.campuscare.edu"
+                href="/"
                 className="hover:text-white transition"
               >
                 Documentation
@@ -77,7 +77,7 @@ const Footer = () => {
             </li>
             <li>
               <a
-                href="https://blog.campuscare.edu"
+                href="/"
                 className="hover:text-white transition"
               >
                 Blog
@@ -85,14 +85,14 @@ const Footer = () => {
             </li>
             <li>
               <a
-                href="https://status.campuscare.edu"
+                href="/"
                 className="hover:text-white transition"
               >
                 System Status
               </a>
             </li>
             <li>
-              <a href="/privacy-policy" className="hover:text-white transition">
+              <a href="/" className="hover:text-white transition">
                 Privacy Policy
               </a>
             </li>
@@ -106,15 +106,15 @@ const Footer = () => {
           </h3>
           <div className="flex items-center text-sm text-gray-400 mb-2">
             <FaEnvelope className="mr-2 text-blue-400" />
-            <span>support@campuscare.edu</span>
+            <span>tripathimurari599@gmail.com</span>
           </div>
           <div className="flex items-center text-sm text-gray-400 mb-4">
             <FaPhoneAlt className="mr-2 text-green-400" />
-            <span>+91-98765-43210</span>
+            <span>+91-7839286085</span>
           </div>
           <div className="flex space-x-4 mt-4">
             <a
-              href="https://linkedin.com"
+              href="https://www.linkedin.com/in/murarimohantripathi/"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-blue-400 transition"
@@ -122,7 +122,7 @@ const Footer = () => {
               <FaLinkedin size={20} />
             </a>
             <a
-              href="https://github.com"
+              href="https://github.com/MurariMohanTripathi/"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-gray-300 transition"
@@ -130,7 +130,7 @@ const Footer = () => {
               <FaGithub size={20} />
             </a>
             <a
-              href="https://twitter.com"
+              href="https://twitter.com/murarimohantri2"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-sky-400 transition"

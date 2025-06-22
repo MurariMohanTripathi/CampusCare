@@ -7,10 +7,9 @@ import { getDatabase, ref, get, child } from 'firebase/database';
 import HomePage from './StudentPage/Homepage';
 import ComplaintForm from './StudentPage/StudentComponents/ComplaintForm';
 import LoginPage from './pages/LoginPage';
-import About from './StudentPage/About';
+import About from './pages/About';
 import HomepageAdmin from './SuperAdmin/HomepageAdmin';
 import SuperAdminAnnouncement from './SuperAdmin/AdminPages/SuperAdminAnnouncement';
-import SuperAdminAbout from './SuperAdmin/AdminPages/SuperAdminAbout';
 import LandingPage from './pages/LandingPage';
 import StudentAnnouncement from './StudentPage/StudentAnnouncements';
 import ProfilePage from './StudentPage/ProfilePage';
@@ -21,7 +20,8 @@ import ProtectedRoute from './component/ProtectedRoute'; // ✅ Correct import
 import Unauthorized from './pages/Unauthorized'; // ✅ Optional page
 import AnnouncementForm from './SuperAdmin/AdminComponents/AnnouncementForm';
 import SuperAdminServices from './SuperAdmin/AdminPages/SuperAdminServices';
-
+import HomepageDAdmin from './departmentAdmin/HomepageDAdmin';
+import ControlCenter from './SuperAdmin/AdminPages/ControlCenter'
 const App = () => {
   const [userRole, setUserRole] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -83,9 +83,7 @@ const App = () => {
       <Route
         path='/About'
         element={
-          <ProtectedRoute role={userRole} allowedRoles={['student']}>
             <About />
-          </ProtectedRoute>
         }
       />
       <Route
@@ -131,10 +129,10 @@ const App = () => {
         }
       />
       <Route
-        path='/SuperAdminAbout'
+        path='/Controls'
         element={
           <ProtectedRoute role={userRole} allowedRoles={['SuperAdmin']}>
-            <SuperAdminAbout />
+            <ControlCenter />
           </ProtectedRoute>
         }
       />
@@ -162,7 +160,9 @@ const App = () => {
           </ProtectedRoute>
         }
       />
+    <Route path='/DAdmin' element = {<HomepageDAdmin />} />
     </Routes>
+  
   );
 };
 
