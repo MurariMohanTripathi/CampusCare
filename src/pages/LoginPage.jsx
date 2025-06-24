@@ -30,7 +30,8 @@ const handleLogin = async (e) => {
     if (snapshot.exists()) {
       const userType = snapshot.val().type;
       if (userType === 'student') navigate('/Homepage');
-      else if (userType === 'admin' || userType === 'SuperAdmin') navigate('/HomepageAdmin');
+      else if (userType === 'SuperAdmin') navigate('/HomepageAdmin');
+      else if (userType === 'DepartmentAdmin' ) navigate('/DAdmin');
       else setError('Unknown user type');
     } else {
       setError('User data not found');

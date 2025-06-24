@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import AnnouncementForm from '../AdminComponents/AnnouncementForm';
 import { useNavigate } from 'react-router-dom';
+import DepSignup from '../AdminComponents/DepSignup';
 
 // Dummy Announcement Modal Component
 const AnnouncementModal = ({ onClose }) => (
@@ -26,6 +27,22 @@ const AnnouncementModal = ({ onClose }) => (
     </div>
   </div>
 );
+const AdminModal = ({onClose})=>{
+  return(
+  <div className="fixed inset-0 z-50 bg-black bg-opacity-40 flex items-center justify-center">
+    <div className="bg-white  rounded-xl shadow-lg w-[90%] max-w-xl">
+      {/* <h3 className="text-xl font-bold mb-4">Post New Announcement</h3> */}
+      <p className="text-gray-600 mb-6"><DepSignup /></p>
+      <button
+        onClick={onClose}
+        className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+      >
+        Close
+      </button>
+    </div>
+  </div>
+  );
+};
 
 const controlOptions = [
   {
@@ -48,6 +65,13 @@ const controlOptions = [
     icon: <Users className="text-green-600 w-6 h-6" />,
     bg: 'bg-green-100',
     buttonText: 'Manage',
+  },
+  {
+    title: 'Manage Departments Admins',
+    description: 'View, approve, or remove Admins accounts.',
+    icon: <Users className="text-green-600 w-6 h-6" />,
+    bg: 'bg-green-100',
+    buttonText: 'Manage Admin',
   },
   {
     title: 'View All Complaints',
@@ -75,6 +99,7 @@ const controlOptions = [
 const ControlCenter = () => {
     const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
+  const [showDeptModal , setDeptModal] =useState(false);
 
   const handleClick = (action) => {
     if (action === 'Post Now') {
@@ -82,6 +107,15 @@ const ControlCenter = () => {
     }
     if(action === 'Open Inbox'){
         navigate('/HomepageAdmin');
+    }
+    if(action ==='Create Admins'){
+       setDeptModal(true);
+    }
+    if(action ==='Manage Admin'){
+      navigate('/DepartmentAdminList');
+    }
+    if(action === 'Manage'){
+      navigate('/StudentList');
     }
   };
 
@@ -120,6 +154,7 @@ const ControlCenter = () => {
 
       {/* Modal */}
       {showModal && <AnnouncementModal onClose={() => setShowModal(false)} />}
+      {showDeptModal && <AdminModal onClose={() => setDeptModal(false)} />}
     </div>
   );
 };

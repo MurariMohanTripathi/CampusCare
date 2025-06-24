@@ -92,7 +92,7 @@ const SignUp = () => {
     }
 
     try {
-      if (userType === "student" || userType === "admin") {
+      if (userType === "student") {
         const usersSnapshot = await get(ref(db, "users"));
         let collegeExists = false;
 
@@ -138,8 +138,8 @@ const SignUp = () => {
         "User registered successfully! A verification email has been sent. Please verify before logging in."
       );
 
-      if (userType === "student") navigate("/Homepage");
-      else navigate("/HomepageAdmin");
+      // if (userType === "student") navigate("/Homepage");
+      // else navigate("/HomepageAdmin");
     } catch (error) {
       alert("Registration failed: " + error.message);
     }
@@ -230,7 +230,6 @@ const SignUp = () => {
                 className="w-full outline-none bg-transparent text-gray-700 font-medium"
               >
                 <option value="student">Student</option>
-                <option value="admin">Admin</option>
                 <option value="SuperAdmin">SuperAdmin</option>
               </select>
             </div>
