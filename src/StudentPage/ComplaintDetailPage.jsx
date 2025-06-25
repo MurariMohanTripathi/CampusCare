@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { ref, onValue, remove } from 'firebase/database';
 import { db, auth } from '../firebase';
 import Navbar from './StudentComponents/Navbar';
+import ComplaintCardModal from './StudentComponents/ComplaintCardModal'; // 👈 import modal
 
 const ComplaintDetailPage = () => {
   const [complaints, setComplaints] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [selectedComplaint, setSelectedComplaint] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
 
   const handleDelete = async (complaintId) => {
     const user = auth.currentUser;
@@ -17,7 +19,6 @@ const ComplaintDetailPage = () => {
     }
 
     const complaintRef = ref(db, `users/${user.uid}/complaints/${complaintId}`);
-
     try {
       await remove(complaintRef);
       setComplaints((prev) => prev.filter((c) => c.id !== complaintId));
@@ -77,7 +78,6 @@ const ComplaintDetailPage = () => {
   return (
     <>
       <Navbar />
-
       <div className="max-w-5xl mx-auto px-4 py-10">
         <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">📝 Your Complaints</h1>
 
@@ -109,8 +109,14 @@ const ComplaintDetailPage = () => {
               <tbody className="divide-y divide-gray-100 bg-white">
                 {complaints.map((complaint) => (
                   <tr key={complaint.id} className="hover:bg-blue-50 transition">
-                    <td className="px-6 py-4 text-blue-600 font-medium">
-                      <Link to={`/complaints/${complaint.id}`}>{complaint.id}</Link>
+                    <td
+                      className="px-6 py-4 text-blue-600 font-medium cursor-pointer underline"
+                      onClick={() => {
+                        setSelectedComplaint(complaint);
+                        setModalOpen(true);
+                      }}
+                    >
+                      {complaint.id}
                     </td>
                     <td className="px-6 py-4">{complaint.subject}</td>
                     <td className="px-6 py-4">{complaint.date}</td>
@@ -134,6 +140,13 @@ const ComplaintDetailPage = () => {
           </div>
         )}
       </div>
+
+      {/* Modal */}
+      <ComplaintCardModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        complaint={selectedComplaint}
+      />
     </>
   );
 };

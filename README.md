@@ -57,7 +57,7 @@ CampusCare is a role-based SaaS platform designed to streamline college complain
 | Premium     | 50              | 20                 | 3           |
 | Enterprise  | Unlimited       | Unlimited          | Unlimited   |
 
-💳 Payments handled via Razorpay test gateway.
+💳 Payments handled via UPI for now and user is manually upgraded.
 
 ---
 

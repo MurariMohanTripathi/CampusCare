@@ -2,11 +2,13 @@ import React, { useEffect, useState } from "react";
 import { ref, get, remove } from "firebase/database";
 import { auth, db } from "../../firebase";
 import AdminNav from "./AdminNav";
+import { useNavigate } from "react-router-dom";
 const StudentList = () => {
   const [students, setStudents] = useState([]);
   const [collegeName, setCollegeName] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchStudents = async () => {
@@ -77,6 +79,12 @@ const StudentList = () => {
     <>
     <AdminNav />
     <div className="max-w-4xl mx-auto p-6 bg-white rounded-xl shadow-lg mt-6">
+      <button
+      onClick={() => navigate("/Controls")}
+      className="mt-4 mb-2 text-blue-600 hover:underline text-sm flex items-center"
+    >
+      ← Back to Controls
+    </button>
       <h2 className="text-2xl font-bold text-center text-blue-700 mb-4">
         Registered Students - {collegeName}
       </h2>

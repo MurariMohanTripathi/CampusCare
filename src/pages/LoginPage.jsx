@@ -5,8 +5,10 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import { ref, get } from "firebase/database";
 import { auth, db } from '../firebase';
 import { useNavigate } from 'react-router-dom';
+import ForgotPasswordModal from '../component/ForgotPasswordModal';
 
 const LoginPage = () => {
+  const[isForgotOpen,setIsForgotOpen] = useState(false);
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -60,7 +62,7 @@ const handleLogin = async (e) => {
         </div>
 
         {/* Right Form Section */}
-        <div className="w-full md:w-1/2 p-8 sm:p-10">
+        <div className="w-full md:w-1/2 p-8 sm:p-10 ">
           <h2 className="text-3xl font-bold text-blue-700 text-center mb-8">Login to Your Account</h2>
 
           <form onSubmit={handleLogin} className="space-y-5">
@@ -122,11 +124,12 @@ const handleLogin = async (e) => {
           </form>
 
           {/* Optional forgot password link */}
-          <p className="text-center text-sm text-blue-600 mt-4 hover:underline cursor-pointer">
+          <button onClick={()=> setIsForgotOpen(true)} className="text-center text-sm text-blue-600 mt-4  hover:underline cursor-pointer ">
             Forgot Password?
-          </p>
+          </button>
         </div>
       </div>
+          <ForgotPasswordModal isOpen ={isForgotOpen} onClose ={()=>setIsForgotOpen(false)} />
     </div>
   );
 };

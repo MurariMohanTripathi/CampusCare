@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getDatabase, ref, child, get } from "firebase/database";
-import { auth } from "../../firebase"; // Adjust path based on your folder structure
+import { auth } from "../../firebase";
+import { Clock, CheckCircle, LoaderCircle } from "lucide-react"; // Optional: Install lucide-react
 
 const StatusCard = () => {
   const [statusCounts, setStatusCounts] = useState({
@@ -52,25 +53,39 @@ const StatusCard = () => {
     fetchStatusCounts();
   }, []);
 
+  const cardData = [
+    {
+      title: "Pending",
+      count: statusCounts.pending,
+      color: "from-blue-400 to-blue-600",
+      icon: <Clock className="w-8 h-8 text-white" />,
+    },
+    {
+      title: "In Progress",
+      count: statusCounts.inProgress,
+      color: "from-yellow-400 to-yellow-600",
+      icon: <LoaderCircle className="w-8 h-8 text-white animate-spin-3" />,
+    },
+    {
+      title: "Resolved",
+      count: statusCounts.resolved,
+      color: "from-green-400 to-green-600",
+      icon: <CheckCircle className="w-8 h-8 text-white" />,
+    },
+  ];
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-10 px-4 xl:px-20">
-      {/* Card 1 - Pending */}
-      <div className="bg-blue-500 text-white rounded-2xl shadow-md p-6 flex flex-col items-center justify-center hover:scale-105 transition-transform duration-300">
-        <h1 className="text-4xl font-bold">{statusCounts.pending}</h1>
-        <p className="mt-2 text-lg font-medium">Pending</p>
-      </div>
-
-      {/* Card 2 - In Progress */}
-      <div className="bg-yellow-500 text-white rounded-2xl shadow-md p-6 flex flex-col items-center justify-center hover:scale-105 transition-transform duration-300">
-        <h1 className="text-4xl font-bold">{statusCounts.inProgress}</h1>
-        <p className="mt-2 text-lg font-medium">In Progress</p>
-      </div>
-
-      {/* Card 3 - Resolved */}
-      <div className="bg-green-500 text-white rounded-2xl shadow-md p-6 flex flex-col items-center justify-center hover:scale-105 transition-transform duration-300">
-        <h1 className="text-4xl font-bold">{statusCounts.resolved}</h1>
-        <p className="mt-2 text-lg font-medium">Resolved</p>
-      </div>
+      {cardData.map(({ title, count, color, icon }) => (
+        <div
+          key={title}
+          className={`bg-gradient-to-br ${color} text-white rounded-2xl shadow-xl p-6 flex flex-col items-center justify-center hover:scale-105 transition-transform duration-300 backdrop-blur-md`}
+        >
+          <div className="mb-3">{icon}</div>
+          <h1 className="text-4xl font-extrabold">{count}</h1>
+          <p className="mt-1 text-lg tracking-wide font-medium">{title}</p>
+        </div>
+      ))}
     </div>
   );
 };
