@@ -11,12 +11,21 @@ const Homepage = () => {
     setShowModal(true);
   };
 
-  useEffect(() => {
-    document.body.style.overflow = showModal ? "hidden" : "auto";
-    return () => {
-      document.body.style.overflow = "auto";
-    };
-  }, [showModal]);
+useEffect(() => {
+  if (showModal) {
+    document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden"; // <-- ADD THIS
+  } else {
+    document.body.style.overflow = "auto";
+    document.documentElement.style.overflow = "auto";
+  }
+
+  return () => {
+    document.body.style.overflow = "auto";
+    document.documentElement.style.overflow = "auto";
+  };
+}, [showModal]);
+
 
   return (
     <>
@@ -43,8 +52,8 @@ const Homepage = () => {
       </div>
 
       {showModal && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center">
-          <div className="w-full max-w-3xl max-h-[90vh] overflow-y-auto bg-white rounded-xl shadow-2xl p-6">
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center overflow-hidden">
+          <div className="w-full max-w-3xl max-h-[90vh] overflow-y-hidden bg-white rounded-xl shadow-2xl p-6">
             <ComplaintForm onClose={() => setShowModal(false)} />
           </div>
         </div>
