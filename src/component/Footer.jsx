@@ -7,8 +7,22 @@ import {
   FaGithub,
   FaTwitter,
 } from "react-icons/fa";
+import { useState } from 'react';
+import ContactModal from '../pages/Contact'; // Adjust path if needed
+import PrivacyPolicyModal from "./PrivacyPolicyModal";
+import BlogModal from "./BlogModal";
+import DocumentationModal from "./DocumentationModal";
+import SystemStatusModal from "./SystemStatusModal";
+
 
 const Footer = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isPrivacyOpen,setPrivacyOpen] = useState(false);
+  const[isBlogOpen,setBlogOpen] = useState(false);
+  const[isDocumentOpen,setDocumentOpen] = useState(false);
+  const[isSystemOpen,setSystemOpen] = useState(false);
+
+
   return (
     <footer className="bg-gradient-to-b from-gray-900 to-black text-white py-12 px-6">
       <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
@@ -54,10 +68,14 @@ const Footer = () => {
               </Link>
             </li>
             <li>
-              <Link to="/contact" className="hover:text-white transition">
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className="hover:text-white transition"
+              >
                 Contact
-              </Link>
+              </button>
             </li>
+
           </ul>
         </div>
 
@@ -68,33 +86,33 @@ const Footer = () => {
           </h3>
           <ul className="space-y-2 text-sm text-gray-400">
             <li>
-              <a
-                href="/"
+              <button
+                onClick={()=>setDocumentOpen(true)}
                 className="hover:text-white transition"
               >
                 Documentation
-              </a>
+              </button>
             </li>
             <li>
-              <a
-                href="/"
+              <button
+                onClick={()=>setBlogOpen(true)}
                 className="hover:text-white transition"
               >
                 Blog
-              </a>
+              </button>
             </li>
             <li>
-              <a
-                href="/"
+              <button
+                onClick={()=>setSystemOpen(true)}
                 className="hover:text-white transition"
               >
                 System Status
-              </a>
+              </button>
             </li>
             <li>
-              <a href="/" className="hover:text-white transition">
+              <button onClick={()=>setPrivacyOpen(true)} className="hover:text-white transition">
                 Privacy Policy
-              </a>
+              </button>
             </li>
           </ul>
         </div>
@@ -155,7 +173,13 @@ const Footer = () => {
         >
           Murari Mohan Tripathi
         </a>
+
       </div>
+        <ContactModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+        <PrivacyPolicyModal isOpen = {isPrivacyOpen} onClose={()=> setPrivacyOpen(false)} />
+          <BlogModal isOpen = {isBlogOpen} onClose={()=>setBlogOpen(false)} />
+          <DocumentationModal isOpen = {isDocumentOpen} onClose={()=>setDocumentOpen(false)} />
+          <SystemStatusModal isOpen = {isSystemOpen} onClose={()=>setSystemOpen(false)} />
     </footer>
   );
 };

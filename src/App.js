@@ -25,6 +25,7 @@ import ControlCenter from "./SuperAdmin/AdminPages/ControlCenter";
 import DepartmentAdminList from "./SuperAdmin/AdminComponents/DepartmentAdminList";
 import StudentList from "./SuperAdmin/AdminComponents/StudentList";
 import DepartmentComplaints from "./departmentAdmin/DepComponent/DepartmentComplaints";
+
 const App = () => {
   const [userRole, setUserRole] = useState(null);
   const [loading, setLoading] = useState(true);
