@@ -131,7 +131,7 @@ package.json
 README.md
 tailwind.config.js
 
-
+```
 ---
 
 ## 🚀 Getting Started (Local Setup)
