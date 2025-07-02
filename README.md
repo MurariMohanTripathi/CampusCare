@@ -62,7 +62,7 @@
 ---
 
 ## 📁 Folder Structure
-
+```
 src/
 ├── components/
 │ ├── BlogModal.jsx
