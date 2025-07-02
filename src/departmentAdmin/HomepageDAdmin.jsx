@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Megaphone, Inbox, BarChart2, UserCircle } from 'lucide-react';
 import DepNavbar from './DepComponent/DepNav';
 import DepAnnouncementForm from './DepComponent/DepAnnouncementForm';
+import { useNavigate } from 'react-router-dom';
 
 const actions = [
   {
@@ -20,28 +21,33 @@ const actions = [
     title: 'View Statistics',
     description: 'Track complaint resolution metrics.',
     icon: <BarChart2 className="w-6 h-6 text-purple-600" />,
-    link: '/DepartmentStats',
+    // link: '/DepartmentStats',
+    link:'/DAdmin',
   },
   {
     title: 'Profile Settings',
     description: 'Update your department admin details.',
     icon: <UserCircle className="w-6 h-6 text-gray-600" />,
-    link: '/ProfileSettings',
+    // link: '/ProfileSettings',
+    link:'/DAdmin',
   },
 ];
 
 const HomepageDAdmin = () => {
   const [showAnnouncementModal, setShowAnnouncementModal] = useState(false);
+  const navigate = useNavigate();
 
   const handleClick = (title) => {
     if (title === 'Post Announcement') {
       setShowAnnouncementModal(true);
     } else if (title === 'Manage Complaints') {
-      window.location.href = '/DepartmentComplaints';
+      navigate('/DepartmentComplaints');
     } else if (title === 'View Statistics') {
-      window.location.href = '/DepartmentStats';
+      // window.location.href = '/DAdmin';
+      navigate('/DAdmin');
     } else if (title === 'Profile Settings') {
-      window.location.href = '/ProfileSettings';
+      // window.location.href = '/DAdmin';
+      navigate('/DAdmin');
     }
   };
 
