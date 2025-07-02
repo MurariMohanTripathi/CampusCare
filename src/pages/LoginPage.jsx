@@ -7,8 +7,10 @@ import { ref, get } from "firebase/database";
 import { auth, db } from "../firebase";
 import { useNavigate } from "react-router-dom";
 import ForgotPasswordModal from "../component/ForgotPasswordModal";
+// import { useLocation } from "react-router-dom";
 
 const LoginPage = () => {
+  // const location = useLocation();
   const [showPassword, setShowPassword] = useState(false);
 
   const [isForgotOpen, setIsForgotOpen] = useState(false);
@@ -38,9 +40,17 @@ const LoginPage = () => {
       const snapshot = await get(ref(db, "users/" + user.uid));
       if (snapshot.exists()) {
         const userType = snapshot.val().type;
-        if (userType === "student") navigate("/Homepage");
-        else if (userType === "SuperAdmin") navigate("/HomepageAdmin");
-        else if (userType === "DepartmentAdmin") navigate("/DAdmin");
+        if (userType === "student") {
+            window.location.href = '/Homepage';
+          // console.log("student logged in ");
+        }
+        else if (userType === "SuperAdmin") {
+            window.location.href = '/HomepageAdmin';
+          // console.log("student logged in ");
+        }
+        else if (userType === "DepartmentAdmin"){ 
+            window.location.href = '/DAdmin';
+        }
         else setError("Unknown user type");
       } else {
         setError("User data not found");

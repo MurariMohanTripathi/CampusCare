@@ -1,9 +1,5 @@
 import React, { useState } from "react";
-import {
-  get,
-  ref,
-  set,
-} from "firebase/database";
+import { get, ref, set } from "firebase/database";
 import {
   createUserWithEmailAndPassword,
   sendEmailVerification,
@@ -51,8 +47,7 @@ const SignUp = () => {
   };
 
   const validatePassword = (value) => {
-    const strongPassword =
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+    const strongPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
     setErrors((prev) => ({
       ...prev,
       password: strongPassword.test(value)
@@ -92,30 +87,35 @@ const SignUp = () => {
     }
 
     try {
-      if (userType === "student") {
-        const usersSnapshot = await get(ref(db, "users"));
-        let collegeExists = false;
+      const usersSnapshot = await get(ref(db, "users"));
+      let collegeExists = false;
 
-        if (usersSnapshot.exists()) {
-          const usersData = usersSnapshot.val();
-          for (let uid in usersData) {
-            if (
-              usersData[uid].college_name &&
-              usersData[uid].college_name.toLowerCase() ===
-                college_name.toLowerCase()
-            ) {
-              collegeExists = true;
-              break;
-            }
+      if (usersSnapshot.exists()) {
+        const usersData = usersSnapshot.val();
+        for (let uid in usersData) {
+          if (
+            usersData[uid].college_name &&
+            usersData[uid].college_name.toLowerCase() ===
+              college_name.toLowerCase()
+          ) {
+            collegeExists = true;
+            break;
           }
         }
+      }
 
-        if (!collegeExists) {
-          alert(
-            "This college is not registered yet. Please contact your SuperAdmin to register the college first."
-          );
-          return;
-        }
+      if (userType === "student" && !collegeExists) {
+        alert(
+          "This college is not registered yet. Please contact your SuperAdmin to register the college first."
+        );
+        return;
+      }
+
+      if (userType === "SuperAdmin" && collegeExists) {
+        alert(
+          "College unique name is already taken. Please use a different name."
+        );
+        return;
       }
 
       const userCredential = await createUserWithEmailAndPassword(

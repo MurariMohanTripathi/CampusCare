@@ -11,6 +11,7 @@ import {
 import AnnouncementForm from '../AdminComponents/AnnouncementForm';
 import { useNavigate } from 'react-router-dom';
 import DepSignup from '../AdminComponents/DepSignup';
+import SuperAdminModal from '../AdminComponents/SuperAdminModal';
 
 // Dummy Announcement Modal Component
 const AnnouncementModal = ({ onClose }) => (
@@ -51,6 +52,13 @@ const controlOptions = [
     icon: <UserPlus className="text-blue-600 w-6 h-6" />,
     bg: 'bg-blue-100',
     buttonText: 'Create Admins',
+  },
+  {
+    title: 'Create new Super Admin',
+    description: 'Add new  Super Admin for institution.',
+    icon: <UserPlus className="text-blue-600 w-6 h-6" />,
+    bg: 'bg-blue-100',
+    buttonText: 'Create Super Admins',
   },
   {
     title: 'Post Announcements',
@@ -100,6 +108,7 @@ const ControlCenter = () => {
     const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const [showDeptModal , setDeptModal] =useState(false);
+  const [showAdminModal , setAdminModal] =useState(false);
 
   const handleClick = (action) => {
     if (action === 'Post Now') {
@@ -116,6 +125,9 @@ const ControlCenter = () => {
     }
     if(action === 'Manage'){
       navigate('/StudentList');
+    }
+    if(action ==='Create Super Admins'){
+      setAdminModal(true);
     }
   };
 
@@ -153,6 +165,7 @@ const ControlCenter = () => {
       </div>
 
       {/* Modal */}
+      {showAdminModal && <SuperAdminModal onClose={() => setAdminModal(false)} />}
       {showModal && <AnnouncementModal onClose={() => setShowModal(false)} />}
       {showDeptModal && <AdminModal onClose={() => setDeptModal(false)} />}
     </div>
