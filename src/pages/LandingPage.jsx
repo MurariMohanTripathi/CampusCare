@@ -1,24 +1,25 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import Footer from "../component/Footer";
-import { ToastContainer, toast, Zoom } from "react-toastify";
+// import { ToastContainer, toast, Zoom } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const LandingPage = () => {
   const navigate = useNavigate();
 
-  const handleAIChatClick = () => {
-    toast("🧠 AI Chat Support Coming Soon!", {
-      position: "bottom-right",
-      autoClose: 2000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: false,
-      draggable: true,
-      transition: Zoom,
-      theme: "dark",
-    });
-  };
+  // const handleAIChatClick = () => {
+  //   toast("🧠 AI Chat Support Coming Soon!", {
+  //     position: "bottom-right",
+  //     autoClose: 2000,
+  //     hideProgressBar: false,
+  //     closeOnClick: true,
+  //     pauseOnHover: false,
+  //     draggable: true,
+  //     transition: Zoom,
+  //     theme: "dark",
+  //   });
+  // };
 
   return (
     <>
@@ -106,7 +107,7 @@ const LandingPage = () => {
         </section>
 
         {/* Floating AI Chat Support Button */}
-        <button
+        {/* <button
           onClick={handleAIChatClick}
           className="
             fixed bottom-6 right-6 z-50
@@ -120,7 +121,7 @@ const LandingPage = () => {
           aria-label="Chat with AI Support"
         >
           💬
-        </button>
+        </button> */}
 
         {/* Footer */}
         <Footer />
