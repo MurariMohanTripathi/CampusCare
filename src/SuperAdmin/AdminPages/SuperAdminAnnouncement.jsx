@@ -10,24 +10,32 @@ const SuperAdminAnnouncement = () => {
   const [showModal, setShowModal] = useState(false);
   const currentUser = auth.currentUser;
 
-  useEffect(() => {
-    if (!currentUser) return;
+useEffect(() => {
+  if (!currentUser) return;
+
+  const userRef = ref(db, `users/${currentUser.uid}`); // Assuming you store users under 'users/{uid}'
+  
+  onValue(userRef, (userSnap) => {
+    const userData = userSnap.val();
+    if (!userData || !userData.college_name) return;
+
+    const userCollegeName = userData.college_name;
 
     const announcementsRef = ref(db, 'announcements');
-    const unsubscribe = onValue(announcementsRef, (snapshot) => {
+    onValue(announcementsRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
         const filtered = Object.entries(data)
-          .filter(([_, a]) => a.createdBy === currentUser.uid)
+          .filter(([_, a]) => a.college_name === userCollegeName) // Match by college_name
           .map(([id, a]) => ({ id, ...a }));
         setAnnouncements(filtered);
       } else {
         setAnnouncements([]);
       }
     });
+  });
+}, [currentUser]);
 
-    return () => unsubscribe();
-  }, [currentUser]);
 
   const handleDelete = (id) => {
     if (window.confirm('Are you sure you want to delete this announcement?')) {
