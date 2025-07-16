@@ -37,7 +37,7 @@ const plans = [
     icon: (
       <MdOutlineWorkspacePremium className="text-blue-500 text-5xl group-hover:scale-110 transition-transform" />
     ),
-    qr: "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=tripathimurari599@okhdfcbank&pn=CampusCare&am=299&cu=INR",
+    qr: "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi%3A%2F%2Fpay%3Fpa%3Dtripathimurari599%40okhdfcbank%26pn%3DCampusCare%26am%3D299%26cu%3DINR",
   },
   {
     name: "Enterprise Plan",
@@ -53,7 +53,7 @@ const plans = [
     icon: (
       <BsRocketTakeoff className="text-indigo-500 text-5xl group-hover:scale-110 transition-transform" />
     ),
-    qr: "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=tripathimurari599@okhdfcbank&pn=CampusCare&am=599&cu=INR",
+    qr: "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi%3A%2F%2Fpay%3Fpa%3Dtripathimurari599%40okhdfcbank%26pn%3DCampusCare%26am%3D599%26cu%3DINR",
   },
 ];
 
